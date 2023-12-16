@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "slack-automation"
+version = "0.1.0"
+description = ""
+authors = ["Masato Naka <masatonaka1989@gmail.com>"]
+readme = "README.md"
+packages = [{include = "slack_automation"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+slack-sdk = "^3.26.1"
+gunicorn = "^21.2.0"
+flask = "^3.0.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

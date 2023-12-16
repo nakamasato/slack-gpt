@@ -1,0 +1,8 @@
+steps:
+- name: 'gcr.io/k8s-skaffold/pack'
+  args:
+  - build
+  - -var
+  - image_name=$REGION-docker.pkg.dev/$PROJECT/cloud-run-source-deploy/slack-automation
+  - -var
+  - project_id=$PROJECT

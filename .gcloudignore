@@ -1,0 +1,38 @@
+# Ignore everything by default
+*
+
+# Explicitly allow directories. `gcloud deploy` fails without it.
+!requirements.txt
+!.
+!slack_automation
+!.python-version
+!Procfile
+
+# Explicitly ignore
+python/search/repos
+.DS_Store
+*.md
+*.csv
+*.zip
+*.service
+*.svg
+*.mov
+__pycache__
+.env
+.git
+
+*.gif
+*.svg
+*.png
+*.yaml
+*.csv
+*.db
+.git
+.flake8
+.env
+.coverage
+.github
+.mypy_cache
+.pytest_cache
+.streamlit
+.venv
