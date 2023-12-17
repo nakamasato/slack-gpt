@@ -2,26 +2,40 @@
 
 Slack GPT integration
 
-![](docs/slack.png)
+<img src="docs/slack.png" width="400">
 
 ## Slack Bot setting
 
 1. Crete a Slack bot https://api.slack.com/apps/
-1. [URL verification](https://api.slack.com/events/url_verification)
+1. Grant permission to the bot (`chat:write`, `app_mentions:read`, `channels:history`, `reactions:read`, `reactions:write`)
 1. Configure Event Subscriptions
-    - Request URL: https://xxxxx/slack/events
-    - Subscribe to bot events: `app_mention`, `chat:write`, `reactions:write`, `reactions:read`
+    - Request URL: https://xxxxx/slack/events (This URL will be available after deploy to GCP Cloud Run) [ref](https://api.slack.com/events/url_verification)
+    - Subscribe to bot events: `app_mention`
 
 ## Local
+
+Set the environment variables `.env`
+
+```
+SLACK_BOT_TOKEN=
+SIGNING_SECRET=
+OPENAI_ORGANIZATION=
+OPENAI_API_KEY=
+```
+
+Install
 
 ```
 poetry install
 ```
 
+Run
+
 ```
-poetry run gunicorn --bind :8080 slack_gpt.main:app
+poetry run python slack_gpt/main.py
 ```
 
+Check
 
 ```
 curl -H 'Content-Type: application/json' -X POST -d '{"type": "url_verification", "challenge": "test"}' localhost:8080/slack/events
@@ -30,7 +44,9 @@ curl -H 'Content-Type: application/json' -X POST -d '{"type": "url_verification"
 }
 ```
 
-## Deploy to Cloud Run
+## Deploy to GCP Cloud Run
+
+### 1. Set environment variables
 
 ```
 PROJECT=xxxx
@@ -38,13 +54,19 @@ REGION=asia-northeast1
 SA_NAME=slack-gpt
 ```
 
+### 2. Generate `requirements.txt`
+
 ```
 poetry export -f requirements.txt --output requirements.txt
 ```
 
+### 3. Create service account
+
 ```
 gcloud iam service-accounts create $SA_NAME --project $PROJECT
 ```
+
+### 4. Create Secrets and grant permission to the service account
 
 ```bash
 # slack bot token
@@ -76,13 +98,7 @@ gcloud secrets add-iam-policy-binding openai-api-key \
     --role="roles/secretmanager.secretAccessor" --project ${PROJECT}
 ```
 
-build
-
-```
-gcloud builds submit . --pack "image=$REGION-docker.pkg.dev/$PROJECT/cloud-run-source-deploy/slack-gpt:$(date '+%Y%m%d%H%M%S')" --project ${PROJECT}
-```
-
-<details><summary>initial deploy</summary>
+### 5. Build and deploy to Cloud Run
 
 ```
 gcloud run deploy slack-gpt \
@@ -98,28 +114,56 @@ gcloud run deploy slack-gpt \
     --project ${PROJECT}
 ```
 
+<details><summary>deploy with yaml</summary>
+
+```
+gcloud builds submit . --pack "image=$REGION-docker.pkg.dev/$PROJECT/cloud-run-source-deploy/slack-gpt:$(date '+%Y%m%d%H%M%S')" --project ${PROJECT}
+```
+
+Get yaml
+
 ```
 gcloud run services describe slack-gpt --format export --project $PROJECT --region $REGION > service.yaml
 ```
 
-</details>
+Deploy with yaml
 
 ```
 gcloud run services replace service.yaml --project $PROJECT --region $REGION
 ```
 
+</details>
+
+### 6. Get Cloud Run URL
+
 ```
 URL=$(gcloud run services describe slack-gpt --project $PROJECT --region ${REGION} --format json | jq -r .status.url)
 ```
 
-check
+### [7. Configure Slack Event Subscriptions](https://api.slack.com/apis/connections/events-api)
+
+Use this `${URL}/slack/events` for Slack Event Subscriptions.
+
+<img src="docs/slack-event-subscriptions-config.png" width="400">
+
+Choose `app_mention` in **Subscribe to bot events** section
+
+<img src="docs/slack-event-subscriptions-bot-events.png" width="400">
+
+### 8. Check
+
+Check with curl
 
 ```
 curl -H 'Content-Type: application/json' -X POST -d '{"type": "url_verification", "challenge": "test"}' $URL/slack/events
 {"challenge": "test"}
 ```
 
+Check with Slack
+
+<img src="docs/slack.png" width="400">
+
 ## Ref
 
 - https://slack.dev/bolt-python/tutorial/getting-started
-- [Slack Event retries](https://api.slack.com/apis/connections/events-api#retries): ``
+- [Slack Event retries](https://api.slack.com/apis/connections/events-api#retries)
