@@ -5,8 +5,9 @@ from slack_sdk.signature import SignatureVerifier
 from flask import Flask, request, jsonify
 from langchain.chat_models import ChatOpenAI
 from langchain.schema import HumanMessage
+from langchain.globals import set_llm_cache
+from langchain.cache import InMemoryCache
 
-app = Flask(__name__)
 
 # Slack Appの設定
 SLACK_BOT_TOKEN = os.environ["SLACK_BOT_TOKEN"]
@@ -14,7 +15,15 @@ SIGNING_SECRET = os.environ["SIGNING_SECRET"]
 DEDICATED_CHANNELS = os.getenv("DEDICATED_CHANNELS", "").split(",") # このチャンネルの場合はThreadだけではなく、Channelにも返信する
 VERIFIER = SignatureVerifier(SIGNING_SECRET)
 
+# Clientの初期化
+app = Flask(__name__)
+set_llm_cache(InMemoryCache())
 client = WebClient(token=SLACK_BOT_TOKEN)
+chat = ChatOpenAI(
+    model="gpt-3.5-turbo",
+    streaming=False,
+    verbose=True,
+)
 
 @app.route("/slack/events", methods=["POST"])
 def slack_events():
@@ -35,19 +44,30 @@ def slack_events():
     if data["type"] == "url_verification":
         return jsonify({"challenge": data["challenge"]})
 
+
+    channel_id = event.get("channel")
+    # dedicated channel内でのメッセージの場合
+    if data["type"] == "message":
+        if channel_id in DEDICATED_CHANNELS:
+            response = client.reactions_add(
+                channel=channel_id,
+                timestamp=event["ts"],
+                name="eye",
+            )
+
     # メッセージがボットによるメンションかどうかを確認
     if event.get("type") == "app_mention":
         # メンションされたチャンネルとユーザーを取得
-        channel_id = event.get("channel")
         user_id = event.get("user")
         text = event.get("text")
+        print(f"{channel_id=}, {user_id=}")
 
         # メッセージをスレッドに返信
         try:
             response = client.reactions_add(
                 channel=channel_id,
                 timestamp=event["ts"],
-                name="eye",
+                name="speech_balloon",
             )
             print(response)
             answer = ask_ai(text)
@@ -79,11 +99,6 @@ def slack_events():
 
 
 def ask_ai(text):
-    chat = ChatOpenAI(
-        model="gpt-3.5-turbo",
-        streaming=False,
-        verbose=True,
-    )
     result = chat([HumanMessage(content=text)])  # AIMessageChunk
     return result.content
 
