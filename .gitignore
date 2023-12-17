@@ -1,4 +1,4 @@
 cloudbuild.yaml
 service.yaml
-env
+.env
 __pycache__

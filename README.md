@@ -1,5 +1,7 @@
 # slack-automation
 
+Slack Bot + GPT
+
 ## Slack Bot setting
 
 1. Crete a Slack bot https://api.slack.com/apps/
@@ -42,10 +44,30 @@ poetry export -f requirements.txt --output requirements.txt
 gcloud iam service-accounts create $SA_NAME --project $PROJECT
 ```
 
-```
+```bash
+# slack bot token
 gcloud secrets create slack-bot-token --replication-policy automatic --project $PROJECT
 echo -n "xoxb-xxx" | gcloud secrets versions add slack-bot-token --data-file=- --project $PROJECT
 gcloud secrets add-iam-policy-binding slack-bot-token \
+    --member="serviceAccount:${SA_NAME}@${PROJECT}.iam.gserviceaccount.com" \
+    --role="roles/secretmanager.secretAccessor" --project ${PROJECT}
+
+# slack signing secret
+gcloud secrets create slack-signing-secret --replication-policy automatic --project $PROJECT
+echo -n "xxx" | gcloud secrets versions add slack-signing-secret --data-file=- --project $PROJECT
+gcloud secrets add-iam-policy-binding slack-signing-secret \
+    --member="serviceAccount:${SA_NAME}@${PROJECT}.iam.gserviceaccount.com" \
+    --role="roles/secretmanager.secretAccessor" --project ${PROJECT}
+# openai organization
+gcloud secrets create openai-organization --replication-policy automatic --project $PROJECT
+echo -n "xxx" | gcloud secrets versions add openai-organization --data-file=- --project $PROJECT
+gcloud secrets add-iam-policy-binding openai-organization \
+    --member="serviceAccount:${SA_NAME}@${PROJECT}.iam.gserviceaccount.com" \
+    --role="roles/secretmanager.secretAccessor" --project ${PROJECT}
+# openai api key
+gcloud secrets create openai-api-key --replication-policy automatic --project $PROJECT
+echo -n "xxx" | gcloud secrets versions add openai-api-key --data-file=- --project $PROJECT
+gcloud secrets add-iam-policy-binding openai-api-key \
     --member="serviceAccount:${SA_NAME}@${PROJECT}.iam.gserviceaccount.com" \
     --role="roles/secretmanager.secretAccessor" --project ${PROJECT}
 ```
@@ -53,7 +75,7 @@ gcloud secrets add-iam-policy-binding slack-bot-token \
 build
 
 ```
-gcloud builds submit . --pack "image=$REGION-docker.pkg.dev/$PROJECT/cloud-run-source-deploy/slack-automation" --project ${PROJECT}
+gcloud builds submit . --pack "image=$REGION-docker.pkg.dev/$PROJECT/cloud-run-source-deploy/slack-automation:$(date '+%Y%m%d%H%M%S')" --project ${PROJECT}
 ```
 
 <details><summary>initial deploy</summary>
@@ -66,6 +88,9 @@ gcloud run deploy slack-automation \
     --allow-unauthenticated \
     --service-account ${SA_NAME}@${PROJECT}.iam.gserviceaccount.com \
     --set-secrets=SLACK_BOT_TOKEN=slack-bot-token:latest \
+    --set-secrets=SIGNING_SECRET=slack-signing-secret:latest \
+    --set-secrets=OPENAI_ORGANIZATION=openai-organization:latest \
+    --set-secrets=OPENAI_API_KEY=openai-api-key:latest \
     --project ${PROJECT}
 ```
 
@@ -93,3 +118,4 @@ curl -H 'Content-Type: application/json' -X POST -d '{"type": "url_verification"
 ## Ref
 
 - https://slack.dev/bolt-python/tutorial/getting-started
+- [Slack Event retries](https://api.slack.com/apis/connections/events-api#retries): ``
