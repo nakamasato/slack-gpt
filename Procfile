@@ -1,1 +1,1 @@
-web: gunicorn --bind :$PORT slack_automation.main:app
+web: gunicorn --bind :$PORT slack_gpt.main:app

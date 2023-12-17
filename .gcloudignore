@@ -4,7 +4,7 @@
 # Explicitly allow directories. `gcloud deploy` fails without it.
 !requirements.txt
 !.
-!slack_automation
+!slack_gpt
 !.python-version
 !Procfile
 

@@ -3,6 +3,6 @@ steps:
   args:
   - build
   - -var
-  - image_name=$REGION-docker.pkg.dev/$PROJECT/cloud-run-source-deploy/slack-automation
+  - image_name=$REGION-docker.pkg.dev/$PROJECT/cloud-run-source-deploy/slack-gpt
   - -var
   - project_id=$PROJECT

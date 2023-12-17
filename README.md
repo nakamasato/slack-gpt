@@ -1,4 +1,4 @@
-# slack-automation
+# slack-gpt
 
 Slack GPT integration
 
@@ -19,7 +19,7 @@ poetry install
 ```
 
 ```
-poetry run gunicorn --bind :8080 slack_automation.main:app
+poetry run gunicorn --bind :8080 slack_gpt.main:app
 ```
 
 
@@ -35,7 +35,7 @@ curl -H 'Content-Type: application/json' -X POST -d '{"type": "url_verification"
 ```
 PROJECT=xxxx
 REGION=asia-northeast1
-SA_NAME=slack-automation
+SA_NAME=slack-gpt
 ```
 
 ```
@@ -79,13 +79,13 @@ gcloud secrets add-iam-policy-binding openai-api-key \
 build
 
 ```
-gcloud builds submit . --pack "image=$REGION-docker.pkg.dev/$PROJECT/cloud-run-source-deploy/slack-automation:$(date '+%Y%m%d%H%M%S')" --project ${PROJECT}
+gcloud builds submit . --pack "image=$REGION-docker.pkg.dev/$PROJECT/cloud-run-source-deploy/slack-gpt:$(date '+%Y%m%d%H%M%S')" --project ${PROJECT}
 ```
 
 <details><summary>initial deploy</summary>
 
 ```
-gcloud run deploy slack-automation \
+gcloud run deploy slack-gpt \
     --source . \
     --platform managed \
     --region $REGION \
@@ -99,7 +99,7 @@ gcloud run deploy slack-automation \
 ```
 
 ```
-gcloud run services describe slack-automation --format export --project $PROJECT --region $REGION > service.yaml
+gcloud run services describe slack-gpt --format export --project $PROJECT --region $REGION > service.yaml
 ```
 
 </details>
@@ -109,7 +109,7 @@ gcloud run services replace service.yaml --project $PROJECT --region $REGION
 ```
 
 ```
-URL=$(gcloud run services describe slack-automation --project $PROJECT --region ${REGION} --format json | jq -r .status.url)
+URL=$(gcloud run services describe slack-gpt --project $PROJECT --region ${REGION} --format json | jq -r .status.url)
 ```
 
 check
