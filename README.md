@@ -6,7 +6,7 @@ Slack GPT integration
 
 ## Slack Bot setting
 
-1. Crete a Slack bot https://api.slack.com/apps/
+1. Create a Slack bot https://api.slack.com/apps/
 1. Grant permission to the bot (`chat:write`, `app_mentions:read`, `channels:history`, `reactions:read`, `reactions:write`)
 1. Configure Event Subscriptions
     - Request URL: https://xxxxx/slack/events (This URL will be available after deploy to GCP Cloud Run) [ref](https://api.slack.com/events/url_verification)
