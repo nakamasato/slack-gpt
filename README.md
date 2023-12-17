@@ -1,6 +1,8 @@
 # slack-automation
 
-Slack Bot + GPT
+Slack GPT integration
+
+![](docs/slack.png)
 
 ## Slack Bot setting
 
@@ -8,7 +10,7 @@ Slack Bot + GPT
 1. [URL verification](https://api.slack.com/events/url_verification)
 1. Configure Event Subscriptions
     - Request URL: https://xxxxx/slack/events
-    - Subscribe to bot events: `app_mention`, `chat:write`
+    - Subscribe to bot events: `app_mention`, `chat:write`, `reactions:write`, `reactions:read`
 
 ## Local
 
@@ -17,7 +19,7 @@ poetry install
 ```
 
 ```
-SLACK_BOT_TOKEN=xxx poetry run gunicorn --bind :8080 slack_automation.main:app
+poetry run gunicorn --bind :8080 slack_automation.main:app
 ```
 
 
@@ -28,7 +30,7 @@ curl -H 'Content-Type: application/json' -X POST -d '{"type": "url_verification"
 }
 ```
 
-## Deploy to Cloud RUn
+## Deploy to Cloud Run
 
 ```
 PROJECT=xxxx
@@ -58,12 +60,14 @@ echo -n "xxx" | gcloud secrets versions add slack-signing-secret --data-file=- -
 gcloud secrets add-iam-policy-binding slack-signing-secret \
     --member="serviceAccount:${SA_NAME}@${PROJECT}.iam.gserviceaccount.com" \
     --role="roles/secretmanager.secretAccessor" --project ${PROJECT}
+
 # openai organization
 gcloud secrets create openai-organization --replication-policy automatic --project $PROJECT
 echo -n "xxx" | gcloud secrets versions add openai-organization --data-file=- --project $PROJECT
 gcloud secrets add-iam-policy-binding openai-organization \
     --member="serviceAccount:${SA_NAME}@${PROJECT}.iam.gserviceaccount.com" \
     --role="roles/secretmanager.secretAccessor" --project ${PROJECT}
+
 # openai api key
 gcloud secrets create openai-api-key --replication-policy automatic --project $PROJECT
 echo -n "xxx" | gcloud secrets versions add openai-api-key --data-file=- --project $PROJECT
