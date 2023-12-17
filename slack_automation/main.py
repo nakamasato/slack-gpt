@@ -11,6 +11,7 @@ app = Flask(__name__)
 # Slack Appの設定
 SLACK_BOT_TOKEN = os.environ["SLACK_BOT_TOKEN"]
 SIGNING_SECRET = os.environ["SIGNING_SECRET"]
+DEDICATED_CHANNELS = os.getenv("DEDICATED_CHANNELS", "").split(",") # このチャンネルの場合はThreadだけではなく、Channelにも返信する
 VERIFIER = SignatureVerifier(SIGNING_SECRET)
 
 client = WebClient(token=SLACK_BOT_TOKEN)
@@ -53,7 +54,8 @@ def slack_events():
             client.chat_postMessage(
                 channel=channel_id,
                 text=f"{answer}",
-                thread_ts=event["ts"]  # スレッドに返信
+                thread_ts=event["ts"],  # スレッドに返信
+                reply_broadcast=channel_id in DEDICATED_CHANNELS,  # Channelに見えるようにする
             )
             response = client.reactions_add(
                 channel=channel_id,
@@ -69,7 +71,8 @@ def slack_events():
             client.chat_postMessage(
                 channel=channel_id,
                 text="Sorry. Something's wrong.",
-                thread_ts=event["ts"]  # スレッドに返信
+                thread_ts=event["ts"],  # スレッドに返信
+                reply_broadcast=channel_id in DEDICATED_CHANNELS,  # Channelに見えるようにする
             )
 
     return jsonify({"success": True})
