@@ -651,13 +651,13 @@ files = [
 
 [[package]]
 name = "langchain"
-version = "0.0.350"
+version = "0.0.352"
 description = "Building applications with LLMs through composability"
 optional = false
 python-versions = ">=3.8.1,<4.0"
 files = [
-    {file = "langchain-0.0.350-py3-none-any.whl", hash = "sha256:11b605f325a4271a7815baaec05bc7622e3ad1f10f26b05c752cafa27663ed38"},
-    {file = "langchain-0.0.350.tar.gz", hash = "sha256:f0e68a92d200bb722586688ab7b411b2430bd98ad265ca03b264e7e7acbb6c01"},
+    {file = "langchain-0.0.352-py3-none-any.whl", hash = "sha256:43ab580e1223e5d7c3495b3c0cb79e2f3a0ecb52caf8126271fb10d42cede2d0"},
+    {file = "langchain-0.0.352.tar.gz", hash = "sha256:8928d7b63d73af9681fe1b2a2b99b84238efef61ed537de666160fd001f41efd"},
 ]
 
 [package.dependencies]
@@ -666,7 +666,7 @@ dataclasses-json = ">=0.5.7,<0.7"
 jsonpatch = ">=1.33,<2.0"
 langchain-community = ">=0.0.2,<0.1"
 langchain-core = ">=0.1,<0.2"
-langsmith = ">=0.0.63,<0.1.0"
+langsmith = ">=0.0.70,<0.1.0"
 numpy = ">=1,<2"
 pydantic = ">=1,<3"
 PyYAML = ">=5.3"
@@ -1543,4 +1543,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "68cb96fdc2f8768fc1b93ed6c8fe7a6b96e99404dc0f21ad1393957f6cd9fc7e"
+content-hash = "79ebbc6b4884f512cdbef837aa5291c9ebeea927d1a1473377e70a8c071e8545"
