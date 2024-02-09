@@ -2,3 +2,5 @@ cloudbuild.yaml
 service.*yaml
 .env
 __pycache__
+.venv
+.coverage
