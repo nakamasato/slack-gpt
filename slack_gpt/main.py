@@ -3,12 +3,11 @@ import os
 from flask import Flask, jsonify, request
 from langchain.cache import InMemoryCache
 from langchain.globals import set_llm_cache
+from langchain.schema import HumanMessage
 from langchain_openai import ChatOpenAI
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 from slack_sdk.signature import SignatureVerifier
-
-from slack_gpt.libs.tools import ask_ai
 
 # Read from environment variables
 SLACK_BOT_TOKEN = os.environ["SLACK_BOT_TOKEN"]
@@ -99,6 +98,12 @@ def slack_events():
             )
 
     return jsonify({"success": True})
+
+
+def ask_ai(chat, text):
+    """ask LLM to answer the question"""
+    result = chat([HumanMessage(content=text)])
+    return result.content
 
 
 if __name__ == "__main__":
