@@ -21,7 +21,7 @@ GPT_MODEL = os.getenv("GPT_MODEL", "gpt-3.5-turbo")
 # Client
 app = Flask(__name__)
 set_llm_cache(InMemoryCache())
-client = WebClient(token=SLACK_BOT_TOKEN)
+slack = WebClient(token=SLACK_BOT_TOKEN)
 chat = ChatOpenAI(
     model=GPT_MODEL,
     streaming=False,
@@ -52,7 +52,7 @@ def slack_events():
     # TODO: reply to message in the dedicated channel without mentioning
     if data["type"] == "message":
         if channel_id in DEDICATED_CHANNELS:
-            response = client.reactions_add(
+            response = slack.reactions_add(
                 channel=channel_id,
                 timestamp=event["ts"],
                 name="eye",
@@ -66,31 +66,31 @@ def slack_events():
 
         # Reply message
         try:
-            response = client.reactions_add(
+            response = slack.reactions_add(
                 channel=channel_id,
                 timestamp=event["ts"],
                 name="speech_balloon",
             )
             print(response)
             answer = ask_ai(chat, text)
-            client.chat_postMessage(
+            slack.chat_postMessage(
                 channel=channel_id,
                 text=f"{answer}",
                 thread_ts=event["ts"],  # Reply in thread
                 reply_broadcast=channel_id in DEDICATED_CHANNELS,
             )
-            response = client.reactions_add(
+            response = slack.reactions_add(
                 channel=channel_id,
                 timestamp=event["ts"],
                 name="white_check_mark",
             )
         except SlackApiError:
-            response = client.reactions_add(
+            response = slack.reactions_add(
                 channel=channel_id,
                 timestamp=event["ts"],
                 name="man-bowing",
             )
-            client.chat_postMessage(
+            slack.chat_postMessage(
                 channel=channel_id,
                 text="Sorry. Something's wrong.",
                 thread_ts=event["ts"],  # Reply in thread
