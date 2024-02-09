@@ -5,3 +5,4 @@ __pycache__
 .venv
 .coverage
 .pytest_cache
+pytest.xml
