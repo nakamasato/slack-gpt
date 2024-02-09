@@ -41,23 +41,25 @@ def test_request_example_invalid(client):
 
 
 def test_url_verification(client):
+    """
+    url_verification
+    https://github.com/nakamasato/slack-gpt/blob/695d6ca73ae65629be29f9d8159c26fdb2c7a815/tests/test_main.py#L44-L74
+    """
     timestamp = str(int(time.time()))
     data = {
         "type": "url_verification",
         "challenge": "challenge",
     }
-    signature = VERIFIER.generate_signature(
-        timestamp=timestamp, body=json.dumps(data).encode()
-    )
-    headers = {
-        "X-Slack-Request-Timestamp": timestamp,
-        "X-Slack-Signature": signature,
-        "Content-Type": "application/json",
-    }
+    signature = VERIFIER.generate_signature(timestamp=timestamp, body=json.dumps(data))
+
     response = client.post(
         "/slack/events",
         data=json.dumps(data),  # json=data or json=json.dumps(data) doesn't work
-        headers=headers,
+        headers={
+            "X-Slack-Request-Timestamp": timestamp,
+            "X-Slack-Signature": signature,
+            "Content-Type": "application/json",
+        },
     )
     assert response.status_code == 200
     assert response.get_json()["challenge"] == "challenge"
