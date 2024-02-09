@@ -9,6 +9,8 @@ from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 from slack_sdk.signature import SignatureVerifier
 
+# from slack_gpt.libs.tools import ask_ai
+
 # Read from environment variables
 SLACK_BOT_TOKEN = os.environ["SLACK_BOT_TOKEN"]
 SIGNING_SECRET = os.environ["SIGNING_SECRET"]
@@ -52,7 +54,7 @@ def slack_events():
     # TODO: reply to message in the dedicated channel without mentioning
     if data["type"] == "message":
         if channel_id in DEDICATED_CHANNELS:
-            response = slack.reactions_add(
+            slack.reactions_add(
                 channel=channel_id,
                 timestamp=event["ts"],
                 name="eye",
@@ -66,12 +68,11 @@ def slack_events():
 
         # Reply message
         try:
-            response = slack.reactions_add(
+            slack.reactions_add(
                 channel=channel_id,
                 timestamp=event["ts"],
                 name="speech_balloon",
             )
-            print(response)
             answer = ask_ai(chat, text)
             slack.chat_postMessage(
                 channel=channel_id,
@@ -79,13 +80,13 @@ def slack_events():
                 thread_ts=event["ts"],  # Reply in thread
                 reply_broadcast=channel_id in DEDICATED_CHANNELS,
             )
-            response = slack.reactions_add(
+            slack.reactions_add(
                 channel=channel_id,
                 timestamp=event["ts"],
                 name="white_check_mark",
             )
         except SlackApiError:
-            response = slack.reactions_add(
+            slack.reactions_add(
                 channel=channel_id,
                 timestamp=event["ts"],
                 name="man-bowing",
@@ -102,7 +103,7 @@ def slack_events():
 
 def ask_ai(chat, text):
     """ask LLM to answer the question"""
-    result = chat([HumanMessage(content=text)])
+    result = chat.invoke(input=[HumanMessage(content=text)])
     return result.content
 
 
