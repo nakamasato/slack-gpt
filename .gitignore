@@ -2,3 +2,7 @@ cloudbuild.yaml
 service.*yaml
 .env
 __pycache__
+.venv
+.coverage
+.pytest_cache
+pytest.xml
