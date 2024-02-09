@@ -1,4 +1,3 @@
-import hmac
 import json
 import os
 import time
@@ -41,18 +40,14 @@ def test_request_example_invalid(client):
     assert response.get_data(as_text=True) == "Invalid request"
 
 
-def test_request_example(client):
-    signing_secret = "test_signing_secret"
-    os.environ["SIGNING_SECRET"] = signing_secret
+def test_url_verification(client):
     timestamp = str(int(time.time()))
     data = {
         "type": "url_verification",
         "challenge": "challenge",
     }
-    signature = VERIFIER.generate_signature(timestamp=timestamp, body=json.dumps(data))
-    print(f"{signature=}, {json.dumps(data).encode()=}")
-    assert VERIFIER.is_valid(
-        body=json.dumps(data), timestamp=timestamp, signature=signature
+    signature = VERIFIER.generate_signature(
+        timestamp=timestamp, body=json.dumps(data).encode()
     )
     headers = {
         "X-Slack-Request-Timestamp": timestamp,
@@ -61,14 +56,8 @@ def test_request_example(client):
     }
     response = client.post(
         "/slack/events",
-        data=json.dumps(data),
-        # json=data, # The Content-Type header will be set to application/json automatically.
+        data=json.dumps(data),  # json=data or json=json.dumps(data) doesn't work
         headers=headers,
     )
-    print(response)
-    assert hmac.compare_digest(
-        signature,
-        VERIFIER.generate_signature(timestamp=timestamp, body=json.dumps(data)),
-    )
-    assert VERIFIER.is_valid_request(body=json.dumps(data), headers=headers)
     assert response.status_code == 200
+    assert response.get_json()["challenge"] == "challenge"
