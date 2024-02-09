@@ -31,7 +31,7 @@ build-backend = "poetry.core.masonry.api"
 testpaths = [
     "tests",
 ]
-addopts = "--junitxml=pytest.xml --cov-report=term-missing --cov=src tests/ -vvv -s"
+addopts = "--junitxml=pytest.xml --cov-report=term-missing --cov=slack_gpt tests/ -vvv -s"
 env = [
     "ENV=test",
     "OPENAI_API_KEY=dummy",
