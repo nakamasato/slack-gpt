@@ -1,0 +1,104 @@
+name: python
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  release:
+    types: [published]
+
+concurrency:
+  group: ${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  COMMENT_BODY_IDENTIFIER: Pytest Coverage Comment
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Python & Poetry
+        uses: ./.github/actions/setup-poetry
+
+      - name: test
+        run: |
+          set -o pipefail
+          poetry run pytest | tee pytest-coverage.txt
+
+      - name: find comment
+        uses: peter-evans/find-comment@v3
+        id: fc
+        with:
+          issue-number: ${{ github.event.number }}
+          body-includes: ${{ env.COMMENT_BODY_IDENTIFIER }}
+
+      - name: delete comment
+        if: steps.fc.outputs.comment-id != 0
+        uses: jungwinter/comment@v1
+        with:
+          type: delete
+          comment_id: ${{ steps.fc.outputs.comment-id }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: pytest coverage comment
+        id: pytest-coverage-comment
+        uses: MishaKav/pytest-coverage-comment@main
+        with:
+          pytest-coverage-path: pytest-coverage.txt
+          junitxml-path: pytest.xml
+          coverage-path-prefix: .
+
+  build:
+    needs:
+      - test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python & Poetry
+        uses: ./.github/actions/setup-poetry
+
+      - name: export requirements.txt
+        run: poetry export -f requirements.txt --output requirements.txt
+
+      - name: Set config
+        id: set_config
+        run: |
+          REPO=slack-gpt
+          if [ "$GITHUB_EVENT_NAME" == "pull_request" ]; then
+            LATEST_SHA="${{ github.event.pull_request.head.sha }}"
+            TAGS="pr-${{ github.event.number }}-${LATEST_SHA:0:7}"
+          elif [ "$GITHUB_EVENT_NAME" == "push" ]; then
+            TAGS="${GITHUB_SHA:0:7}"
+          elif [ "$GITHUB_EVENT_NAME" == "release" ]; then
+            TAGS="$GITHUB_REF_NAME"
+          fi
+          echo "TAGS=$TAGS" >> "$GITHUB_OUTPUT"
+          echo "REPO=$REPO" >> "$GITHUB_OUTPUT"
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Install pack CLI
+        uses: buildpacks/github-actions/setup-pack@v4.9.1
+
+      - name: Build app with pack CLI using Buildpack Cache image (see https://buildpacks.io/docs/app-developer-guide/using-cache-image/) & publish to Docker Hub
+        run: |
+          pack build "index.docker.io/${{ secrets.DOCKERHUB_USERNAME }}/${{ steps.set_config.outputs.REPO }}:${{ steps.set_config.outputs.TAGS }}" \
+              --path . \
+              --cache-image "index.docker.io/${{ secrets.DOCKERHUB_USERNAME }}/${{ steps.set_config.outputs.REPO }}-cache:latest" \
+              --publish
