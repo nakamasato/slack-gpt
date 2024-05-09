@@ -6,6 +6,24 @@ Docker: [nakamasato/slack-gpt](https://hub.docker.com/r/nakamasato/slack-gpt)
 
 <img src="docs/slack.png" width="400">
 
+## Environment Varibales
+
+- `SLACK_BOT_TOKEN`: Slack bot token
+- `SIGNING_SECRET`: Slack signing secret
+- `DEDICATED_CHANNELS` (optional): Dedicated channel for the bot
+- `GPT_MODEL` (optional): GPT model (e.g. `gpt-3.5-turbo`, `gpt-4`, `gemini-pro`) (default: `gpt-3.5-turbo`)
+- OpenAI
+    - `OPENAI_ORGANIZATION`: OpenAI organization
+    - `OPENAI_API_KEY`: OpenAI API key
+- Gemini
+    - `GOOGLE_API_KEY`: Google API key
+        ```
+
+> [!NOTE]
+> If you use Gemini, you need to generate an API key.
+> `gcloud services api-keys create --api-target=service=generativelanguage.service.com --display-name "Gemini API Key" --project $PROJECT`
+
+
 ## Create Slack app
 
 1. Create a Slack app https://api.slack.com/apps/
