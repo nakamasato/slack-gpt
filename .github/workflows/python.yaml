@@ -100,6 +100,6 @@ jobs:
         run: |
           pack build "index.docker.io/${{ secrets.DOCKERHUB_USERNAME }}/${{ steps.set_config.outputs.REPO }}:${{ steps.set_config.outputs.TAGS }}" \
               --path . \
-              --builder gcr.io/buildpacks/builder:v1 \
+              --builder heroku/builder:22 \
               --cache-image "index.docker.io/${{ secrets.DOCKERHUB_USERNAME }}/${{ steps.set_config.outputs.REPO }}-cache:latest" \
               --publish
