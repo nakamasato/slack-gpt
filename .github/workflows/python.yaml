@@ -101,6 +101,7 @@ jobs:
       - name: Build app with pack CLI using Buildpack Cache image (see https://buildpacks.io/docs/app-developer-guide/using-cache-image/) & publish to Docker Hub
         run: |
           pack build "index.docker.io/${{ secrets.DOCKERHUB_USERNAME }}/${{ steps.set_config.outputs.REPO }}:${{ steps.set_config.outputs.TAGS }}" \
+              --tag "index.docker.io/${{ secrets.DOCKERHUB_USERNAME }}/${{ steps.set_config.outputs.REPO }}:latest" \
               --path . \
               --builder heroku/builder:22 \
               --cache-image "index.docker.io/${{ secrets.DOCKERHUB_USERNAME }}/${{ steps.set_config.outputs.REPO }}-cache:latest" \
