@@ -36,6 +36,7 @@ jobs:
           poetry run pytest | tee pytest-coverage.txt
 
       - name: find comment
+        if: github.event_name == 'pull_request'
         uses: peter-evans/find-comment@v3
         id: fc
         with:
@@ -43,7 +44,7 @@ jobs:
           body-includes: ${{ env.COMMENT_BODY_IDENTIFIER }}
 
       - name: delete comment
-        if: steps.fc.outputs.comment-id != 0
+        if: github.event_name == 'pull_request' && steps.fc.outputs.comment-id != 0
         uses: jungwinter/comment@v1
         with:
           type: delete
@@ -51,6 +52,7 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: pytest coverage comment
+        if: github.event_name == 'pull_request'
         id: pytest-coverage-comment
         uses: MishaKav/pytest-coverage-comment@main
         with:

@@ -43,9 +43,7 @@ def headers(timestamp):
     def generate_headers(data: str | bytes):
         return {
             "X-Slack-Request-Timestamp": timestamp,
-            "X-Slack-Signature": VERIFIER.generate_signature(
-                timestamp=timestamp, body=data
-            ),
+            "X-Slack-Signature": VERIFIER.generate_signature(timestamp=timestamp, body=data),
             "Content-Type": "application/json",
         }
 
@@ -118,9 +116,7 @@ def test_app_mention(chat_mock, slack_mock, flask_cli, headers):
     2. post message
     3. add reaction
     """
-    chat_mock.invoke.return_value = AIMessage(
-        content="slack app is an app that developers can customize."
-    )
+    chat_mock.invoke.return_value = AIMessage(content="slack app is an app that developers can customize.")
     data_str: str = json.dumps(
         {
             "type": "event_callback",
@@ -153,9 +149,7 @@ def test_app_mention(chat_mock, slack_mock, flask_cli, headers):
     ]
     slack_mock.reactions_add.assert_has_calls(calls)
 
-    chat_mock.invoke.assert_called_with(
-        input=[HumanMessage(content="<@U0LAN0Z89> can you tell me about slack app?")]
-    )
+    chat_mock.invoke.assert_called_with(input=[HumanMessage(content="<@U0LAN0Z89> can you tell me about slack app?")])
     slack_mock.chat_postMessage.assert_called_with(
         channel="C000000",
         text="slack app is an app that developers can customize.",
