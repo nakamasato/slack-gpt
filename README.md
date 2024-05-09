@@ -57,7 +57,7 @@ SA_NAME=slack-gpt
 ### 2. Generate `requirements.txt`
 
 ```
-poetry export -f requirements.txt --output requirements.txt
+poetry export -f requirements.txt --output requirements.txt --without-hashes
 ```
 
 ### 3. Create service account
