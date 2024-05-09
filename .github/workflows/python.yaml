@@ -95,13 +95,13 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Install pack CLI
-        uses: buildpacks/github-actions/setup-pack@v4.9.1
+      - name: Install Pack CLI
+        uses: buildpacks/github-actions/setup-pack@v5.6.0
 
       - name: Build app with pack CLI using Buildpack Cache image (see https://buildpacks.io/docs/app-developer-guide/using-cache-image/) & publish to Docker Hub
         run: |
           pack build "index.docker.io/${{ secrets.DOCKERHUB_USERNAME }}/${{ steps.set_config.outputs.REPO }}:${{ steps.set_config.outputs.TAGS }}" \
               --path . \
-              --builder gcr.io/buildpacks/builder:v1 \
+              --builder heroku/builder:22 \
               --cache-image "index.docker.io/${{ secrets.DOCKERHUB_USERNAME }}/${{ steps.set_config.outputs.REPO }}-cache:latest" \
               --publish
