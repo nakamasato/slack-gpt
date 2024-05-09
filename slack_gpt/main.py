@@ -5,6 +5,7 @@ from langchain.cache import InMemoryCache
 from langchain.globals import set_llm_cache
 from langchain.schema import HumanMessage
 from langchain_openai import ChatOpenAI
+from langchain_google_genai import ChatGoogleGenerativeAI
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 from slack_sdk.signature import SignatureVerifier
@@ -24,10 +25,14 @@ GPT_MODEL = os.getenv("GPT_MODEL", "gpt-3.5-turbo")
 app = Flask(__name__)
 set_llm_cache(InMemoryCache())
 slack = WebClient(token=SLACK_BOT_TOKEN)
-chat = ChatOpenAI(
-    model=GPT_MODEL,
-    streaming=False,
-    verbose=True,
+chat = (
+    ChatOpenAI(
+        model=GPT_MODEL,
+        streaming=False,
+        verbose=True,
+    )
+    if GPT_MODEL.startswith("gpt")
+    else ChatGoogleGenerativeAI(model=GPT_MODEL, verbose=True)
 )
 
 
