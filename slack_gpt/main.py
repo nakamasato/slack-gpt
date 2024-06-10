@@ -1,14 +1,14 @@
 import os
 
 from flask import Flask, jsonify, request
-from langchain.cache import InMemoryCache
 from langchain.globals import set_llm_cache
-from langchain.schema import HumanMessage
 from langchain_openai import ChatOpenAI
 from langchain_google_genai import ChatGoogleGenerativeAI
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 from slack_sdk.signature import SignatureVerifier
+from langchain_community.cache import InMemoryCache
+from langchain_core.messages import HumanMessage
 
 # from slack_gpt.libs.tools import ask_ai
 
