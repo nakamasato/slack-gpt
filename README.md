@@ -17,7 +17,6 @@ Docker: [nakamasato/slack-gpt](https://hub.docker.com/r/nakamasato/slack-gpt)
     - `OPENAI_API_KEY`: OpenAI API key
 - Gemini
     - `GOOGLE_API_KEY`: Google API key
-        ```
 
 > [!NOTE]
 > If you use Gemini, you need to generate an API key.
