@@ -1057,17 +1057,17 @@ images = ["pillow (>=10.1.0,<11.0.0)"]
 
 [[package]]
 name = "langchain-openai"
-version = "0.1.14"
+version = "0.1.16"
 description = "An integration package connecting OpenAI and LangChain"
 optional = false
 python-versions = "<4.0,>=3.8.1"
 files = [
-    {file = "langchain_openai-0.1.14-py3-none-any.whl", hash = "sha256:fcd34cc5b5713798908a5828d364b4426e3b1afccbd564d344e5477acb86634a"},
-    {file = "langchain_openai-0.1.14.tar.gz", hash = "sha256:1f13d6041e8bedddf6eb47ccad7416e05af38fa169324f7f1bdf4f385780f8d8"},
+    {file = "langchain_openai-0.1.16-py3-none-any.whl", hash = "sha256:bff90e9d0be786495920a7851ae4d55247fb084d3a11d1b15bfe91904ce1cb0f"},
+    {file = "langchain_openai-0.1.16.tar.gz", hash = "sha256:3dedcc785a64a488ad6a313cc59b0dccea025d27413b55cec73a20dcf3ded4da"},
 ]
 
 [package.dependencies]
-langchain-core = ">=0.2.2,<0.3"
+langchain-core = ">=0.2.17,<0.3.0"
 openai = ">=1.32.0,<2.0.0"
 tiktoken = ">=0.7,<1"
 
