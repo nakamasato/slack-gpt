@@ -19,7 +19,7 @@ DEDICATED_CHANNELS = os.getenv("DEDICATED_CHANNELS", "").split(
     ","
 )  # Also send to the channel in the dedicated channels
 VERIFIER = SignatureVerifier(SIGNING_SECRET)
-GPT_MODEL = os.getenv("GPT_MODEL", "gpt-3.5-turbo")
+GPT_MODEL = os.getenv("GPT_MODEL", "gpt-4o")
 
 # Client
 app = Flask(__name__)
@@ -104,6 +104,11 @@ def slack_events():
             )
 
     return jsonify({"success": True})
+
+
+@app.route("/health", methods=["GET"])
+def health():
+    return jsonify({"status": "ok"})
 
 
 def ask_ai(chat, text):

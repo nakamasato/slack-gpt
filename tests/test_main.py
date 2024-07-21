@@ -78,6 +78,12 @@ def test_url_verification(flask_cli, headers):
     assert response.get_json()["challenge"] == "challenge"
 
 
+def test_health(flask_cli):
+    response = flask_cli.get("/health")
+    assert response.status_code == 200
+    assert response.get_json() == {"status": "ok"}
+
+
 @patch("slack_gpt.main.slack")
 def test_message(slack_mock, flask_cli, headers):
     """
