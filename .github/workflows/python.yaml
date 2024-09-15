@@ -28,7 +28,7 @@ jobs:
           persist-credentials: false
 
       - name: Set up Python & Poetry
-        uses: ./.github/actions/setup-poetry
+        uses: nakamasato/github-actions/setup-poetry@1.5.0
 
       - name: test
         run: |
@@ -69,10 +69,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Python & Poetry
-        uses: ./.github/actions/setup-poetry
-
-      - name: export requirements.txt
-        run: poetry export -f requirements.txt --output requirements.txt
+        uses: nakamasato/github-actions/setup-poetry@1.5.0
 
       - name: Set config
         id: set_config
