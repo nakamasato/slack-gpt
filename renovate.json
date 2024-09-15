@@ -8,9 +8,6 @@
   "lockFileMaintenance": {
     "enabled": true
   },
-  "ignorePaths": [
-    "requirements.txt"
-  ],
   "schedule": [
     "before 4am on sunday"
   ]
