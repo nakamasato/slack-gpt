@@ -93,7 +93,7 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Install Pack CLI
-        uses: buildpacks/github-actions/setup-pack@v5.8.10
+        uses: buildpacks/github-actions/setup-pack@v5.8.11
 
       - name: Build app with pack CLI using Buildpack Cache image (see https://buildpacks.io/docs/app-developer-guide/using-cache-image/) & publish to Docker Hub
         run: |
